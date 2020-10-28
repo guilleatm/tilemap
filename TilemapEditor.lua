@@ -1,6 +1,6 @@
 local Tilemap = require('Tilemap')
 require('tilemapEditorControls')
-require('../camera/camera')
+local Camera = require('../camera/Camera')
 
 local TilemapEditor = {}
 
@@ -83,9 +83,9 @@ function TilemapEditor:load(path, tileSize)
 end
 
 function TilemapEditor:draw()
-	camera:set()
+	Camera:set()
 		self.tilemap:draw()
-	camera:unset()
+	Camera:unset()
 
 	if animateTileSet then
 		love.graphics.setCanvas(self.canvas)
@@ -119,7 +119,7 @@ function TilemapEditor:leftClick(x, y)
 	else
 		-- Click outside canvas
 		if not self.selectedTile then return end
-		self:addTile(x + camera.x, y + camera.y, self.selectedTile.id)
+		self:addTile(x + Camera.x, y + Camera.y, self.selectedTile.id)
 	end
 end
 
@@ -129,21 +129,21 @@ function TilemapEditor:rightClick(x, y)
 		return
 	else
 		-- Click outside canvas
-		self:removeTile(x + camera.x, y + camera.y)
+		self:removeTile(x + Camera.x, y + Camera.y)
 	end
 end
 
 function TilemapEditor:up()
-	camera:move(0, -self.tilemap.tileSize)
+	Camera:move(0, -self.tilemap.tileSize)
 end
 function TilemapEditor:down()
-	camera:move(0, self.tilemap.tileSize)
+	Camera:move(0, self.tilemap.tileSize)
 end
 function TilemapEditor:left()
-	camera:move(-self.tilemap.tileSize, 0)
+	Camera:move(-self.tilemap.tileSize, 0)
 end
 function TilemapEditor:right()
-	camera:move(self.tilemap.tileSize, 0)
+	Camera:move(self.tilemap.tileSize, 0)
 end
 
 return TilemapEditor

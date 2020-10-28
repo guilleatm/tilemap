@@ -3,8 +3,6 @@
 local TilemapEditor = require('TilemapEditor')
 Animation = require('../animations/Animation')
 
-local t = 0
-
 function love.load()
 	local pathToTiles = "media/img/tiles/"
 	myTilemapEditor = TilemapEditor:new(64, pathToTiles, 0.5, 0.5)
