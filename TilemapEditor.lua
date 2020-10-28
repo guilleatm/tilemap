@@ -6,13 +6,13 @@ local TilemapEditor = {}
 
 local animateTileSet = true
 
-function TilemapEditor:new(tileSize, pathToTiles, relativeWidth, relativeHeight, ox, oy, tilemap, tileSet)
+function TilemapEditor:new(tileSize, pathToTiles, relativeWidth, relativeHeight, ox, oy, tilemap, tileSet) -- #C
 
 	local te = {}
 
 	assert(tileSize and pathToTiles, "ERROR: TilemapEditor:new(tileSize, pathToTiles), tileSize and pathToTiles can not be nil, pathToTiles is the path to the directory that contains the tile images")
 
-	te.tilemap = tilemap or Tilemap:new(tileSize)
+	te.tilemap = Tilemap:new(tileSize)
 
 	te.pathToTiles = toPath(pathToTiles)
 	te.tileIDs = love.filesystem.getDirectoryItems(te.pathToTiles)
@@ -74,12 +74,12 @@ function TilemapEditor:new(tileSize, pathToTiles, relativeWidth, relativeHeight,
 	return te
 end
 
-function TilemapEditor:save(path_or_name)
-	self.tilemap:save(path_or_name)
+function TilemapEditor:save(path)
+	self.tilemap:save(path)
 end
 
-function TilemapEditor:load(path_or_name, oldTileSize)
-	self.tilemap:load(path_or_name, self.tilemap.tileSize, oldTileSize)
+function TilemapEditor:load(path, tileSize)
+	self.tilemap:load(path, tileSize)
 end
 
 function TilemapEditor:draw()
@@ -95,7 +95,7 @@ function TilemapEditor:draw()
 	love.graphics.draw(self.canvas, self.canvasOx, self.canvasOy)
 end
 
-function TilemapEditor:addTile(x, y, id)
+function TilemapEditor:addTile(x, y, id) -- #Revisar
 	self.tilemap:addTile(x, y, id)
 end
 
@@ -103,13 +103,12 @@ function TilemapEditor:removeTile(x, y)
 	self.tilemap:removeTile(x, y)
 end
 
-function TilemapEditor:selectTile(tilemap, x, y, positionInList)
-	return tilemap:selectTile(x, y, positionInList)
+function TilemapEditor:selectTile(tilemap, x, y)
+	return tilemap:selectTile(x, y)
 end
 
 function TilemapEditor:clear()
-	self.tilemap.tiles = {}
-	collectgarbage()
+	self.tilemap:clear()
 end
 
 
@@ -125,10 +124,9 @@ function TilemapEditor:leftClick(x, y)
 end
 
 function TilemapEditor:rightClick(x, y)
-
 	if x > self.canvasOx and x < self.canvasOx + self.canvasW and y > self.canvasOy and y < self.canvasOy + self.canvasH then
 		-- Click inside canvas
-
+		return
 	else
 		-- Click outside canvas
 		self:removeTile(x + camera.x, y + camera.y)

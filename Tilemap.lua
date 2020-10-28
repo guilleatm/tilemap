@@ -4,7 +4,7 @@ require('../utils/utils')
 local Tilemap = {}
 
 
-local animationKey, wallKey = 'anim', 'wall'
+local animationKey = 'anim'
 -- anim_w64h64d1l1s1 --examples
 -- anim_d1l1s1
 
@@ -21,14 +21,15 @@ function Tilemap:new(tileSize)
 	return tm
 end
 
-function Tilemap:draw() -- #C
-	-- for k, tile in pairs(self.tiles) do
-	-- 	tile:draw(self.tileSize)
-	-- end
+function Tilemap:draw()
 	local dt = love.timer.getDelta()
 
-	for i = #self.tiles, 1, -1 do
-		self.tiles[i]:draw(self.tileSize, dt)
+	for i, row in pairs(self.tiles) do
+		for j, tiles in pairs(row) do
+			for _, tile in pairs(tiles) do
+				tile:draw(self.tileSize, dt)
+			end
+		end
 	end
 end
 
@@ -39,7 +40,7 @@ function Tilemap:selectTile(x, y)
 	return self.tiles[i][j], j, i
 end
 
-function Tilemap:addTile(x, y, id)
+function Tilemap:addTile(x, y, id) -- #M
 
 	local tile = Tile:new(j * self.tileSize, i * self.tileSize, id)
 	local tiles, j, i = self.selectTile(x, y), j, i
@@ -59,23 +60,19 @@ function Tilemap:addTile(x, y, id)
 	end
 end
 
-function Tilemap:removeTile(x, y) --#C
+function Tilemap:removeTile(x, y)
 
-	local iTileToRemove = self:selectTile(x, y, true)
+	local tiles, j, i = self:selectTile(x, y)
 
-	if iTileToRemove then
-		table.remove(self.tiles, iTileToRemove)
-	end
+	tiles[#tiles] = nil -- Arguments passed by reference
 end
-
-
 
 function Tilemap:clear()
 	self.tiles = {}
 	collectgarbage()
 end
 
-function Tilemap:save(path_or_name)
+function Tilemap:save(path_or_name) -- #Revisar
 
 	local defaultFolder = 'tilemaps/'
 	local defaultTilemapName = 'unnamedTilemap'
