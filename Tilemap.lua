@@ -8,23 +8,72 @@ local animationKey, wallKey = 'anim', 'wall'
 -- anim_w64h64d1l1s1 --examples
 -- anim_d1l1s1
 
-function Tilemap:new(tileSize, ox, oy)
-
-	local tm = {}
+function Tilemap:new(tileSize)
 
 	assert(tileSize, "ERROR: Tilemap:new(tileSize), tileSize can not be nil")
-	tm.tileSize = tileSize
-	tm.ox = ox or 0
-	tm.oy = oy or 0
 
+	local tm = {}
+	tm.tileSize = tileSize
 	tm.tiles = {}
-	tm.walls = {}
 
 	setmetatable(tm, self)
 	self.__index = self
 	return tm
 end
 
+function Tilemap:draw() -- #C
+	-- for k, tile in pairs(self.tiles) do
+	-- 	tile:draw(self.tileSize)
+	-- end
+	local dt = love.timer.getDelta()
+
+	for i = #self.tiles, 1, -1 do
+		self.tiles[i]:draw(self.tileSize, dt)
+	end
+end
+
+function Tilemap:selectTile(x, y)
+
+	local j, i = (x - (x % self.tileSize)) / self.tileSize, (y - (y % self.tileSize)) / self.tileSize
+
+	return self.tiles[i][j], j, i
+end
+
+function Tilemap:addTile(x, y, id)
+
+	local tile = Tile:new(j * self.tileSize, i * self.tileSize, id)
+	local tiles, j, i = self.selectTile(x, y), j, i
+
+	-- if string.find(id, animationKey) then -- #C ANIMATIONS IN TILES!!
+	-- 	tile.animation = Animation:load(id, nil, nil, nil, nil, self.tileSize)
+	-- 	tile.animation:start()
+	-- end
+	
+	if not self.tiles[i] then
+		self.tiles[i] = {}
+	end
+	if not self.tiles[i][j] then
+		self.tiles[i][j] = {tile}
+	else
+		table.insert(self.tiles[i][j], tile)
+	end
+end
+
+function Tilemap:removeTile(x, y) --#C
+
+	local iTileToRemove = self:selectTile(x, y, true)
+
+	if iTileToRemove then
+		table.remove(self.tiles, iTileToRemove)
+	end
+end
+
+
+
+function Tilemap:clear()
+	self.tiles = {}
+	collectgarbage()
+end
 
 function Tilemap:save(path_or_name)
 
@@ -49,7 +98,7 @@ function Tilemap:save(path_or_name)
 	file:close()
 end
 
-function Tilemap:load(path_or_name, tileSize, oldTileSize)
+function Tilemap:load(path_or_name, tileSize) -- #C
 
 	local defaultFolder = 'tilemaps/'
 	local defaultTilemapEditorName = 'unnamedTilemap'
@@ -67,117 +116,13 @@ function Tilemap:load(path_or_name, tileSize, oldTileSize)
 
 	local tilesInfo = dofile(path_or_name)
 
-	for k, almostTile in pairs(tilesInfo) do
+	for k, almostTile in pairs(tilesInfo) do -- #C
 		table.insert(self.tiles, Tile:load(almostTile))
 	end
 
 	self:setSize(tileSize, oldTileSize)
 
 	return self
-end
-
-function Tilemap:draw()
-	-- for k, tile in pairs(self.tiles) do
-	-- 	tile:draw(self.tileSize)
-	-- end
-	local dt = love.timer.getDelta()
-
-	for i = #self.tiles, 1, -1 do
-		self.tiles[i]:draw(self.tileSize, dt)
-	end
-end
-
-function Tilemap:addTile(x, y, id)
-
-	local xTile, yTile = (x - (x % self.tileSize)) / self.tileSize, (y - (y % self.tileSize)) / self.tileSize
-
-	local i = binarySearchAmplified(xTile * self.tileSize, self.tiles, true, {'x'})
-
-	-- table.insert(self.tiles, i, Tile:new(xTile * self.tileSize, yTile * self.tileSize, id, self.tileSize))
-	-- self.tiles[i]:animate() -- #C
-
-	local tile = Tile:new(xTile * self.tileSize, yTile * self.tileSize, id, self.tileSize)
-	
-	if string.find(id, animationKey) then
-		tile.animation = Animation:load(id, nil, nil, nil, nil, self.tileSize)
-		tile.animation:start() -- #C
-	end
-	if string.find(id, wallKey) then
-		tile.wall = true
-		table.insert(self.walls, tile)
-	end
-	table.insert(self.tiles, i, tile)
-end
-
-function Tilemap:removeTile(x, y)
-
-	local iTileToRemove = self:selectTile(x, y, true)
-
-	if iTileToRemove then
-		table.remove(self.tiles, iTileToRemove)
-	end
-end
-
-function Tilemap:selectTile(x, y, positionInList)
-	x = x - self.ox
-	y = y - self.oy
-
-	local xTile, yTile = (x - (x % self.tileSize)) / self.tileSize, (y - (y % self.tileSize)) / self.tileSize
-
-	local first, last = binarySearchAmplified(xTile * self.tileSize, self.tiles, false, {'x'})
-
-	if not first then return end
-
-	if first == last then
-		local tile = self.tiles[first]
-		if tile.y == yTile * self.tileSize then
-			if positionInList then
-				return first
-			else
-				return self.tiles[first]
-			end
-		end
-	else
-		for i = first, last do
-			local tile = self.tiles[i]
-			if tile.y == yTile * self.tileSize then
-				if positionInList then
-					return i
-				else
-					return self.tiles[i]
-				end
-			end
-		end
-	end
-end
-
-function Tilemap:clear()
-	self.tiles = {}
-	collectgarbage()
-end
-
-function Tilemap:setScale(scale)
-
-	if scale then
-		self.tileSize = self.tileSize * self.scale
-	end	
-
-	return self.scale
-end
-
-function Tilemap:setSize(size, oldTileSize)
-
-	if size then
-		self.tileSize = size
-		local factor = size / (oldTileSize or size)
-	
-		for i, tile in ipairs(self.tiles) do
-			tile.x = tile.x * factor
-			tile.y = tile.y * factor
-		end
-	end
-
-	return self.tileSize
 end
 
 return Tilemap
