@@ -1,8 +1,8 @@
-require('Tilemap')
+local Tilemap = require('Tilemap')
 require('tilemapEditorControls')
 require('../camera/camera')
 
-TilemapEditor = {}
+local TilemapEditor = {}
 
 local animateTileSet = true
 
@@ -148,93 +148,4 @@ function TilemapEditor:right()
 	camera:move(self.tilemap.tileSize, 0)
 end
 
-
--- function TilemapEditor:mousePressed(x, y, button)
--- 	if self.mode == 1 then
--- 		TilemapEditor:mousePressedMode1(x, y, button)
--- 	elseif self.mode == 2 then
--- 		TilemapEditor:mousePressedMode2(x, y, button)
--- 	end
--- end
-
--- function TilemapEditor:mousePressedMode1(x, y, button)
--- 	local oxMap, oyMap = -camera.x / camera.scaleX, -camera.y / camera.scaleY
-
--- 	if y > self.y and y < self.y + self.h and x > self.x and x < self.x + self.w then -- Click dins del TilemapEditor
--- 		local ex, ey = x - self.x, y - self.y -- TilemapEditor x and TilemapEditor y, les coordenades respecte al TilemapEditor
--- 		local ti, tj = math.floor(ey / (cellSize * self.tileScale)), math.floor(ex / (cellSize * self.tileScale)) + 1
--- 		local tilesInARow = self.w / (cellSize * self.tileScale)
--- 		local tileId = ti * tilesInARow + tj
-		
--- 		self.tileSelected = tileId
-	
--- 	elseif y > oyMap and y < oyMap + (numCells * cellSize) / camera.scaleY and x > oxMap and x < oxMap + (numCells * cellSize) / camera.scaleX then -- Click dins del mapa
--- 		local mx, my = x - oxMap, y - oyMap -- Map x and map y, les coordenades respecte al mapa
--- 		local ti, tj = math.floor(my / (cellSize / camera.scaleY)), math.floor(mx / (cellSize / camera.scaleX)) + 1
--- 		local tileId = map[ti + 1][tj].id
-
--- 		if button == 1 then -- Botó esquerre
--- 			self.pastTile = tileId
--- 			self.pastI = ti + 1
--- 			self.pastJ = tj
--- 			map[ti + 1][tj] = tile:new(self.tileSelected, ti + 1, tj)
--- 		elseif button == 2 then -- Botó dret
--- 			mapBack[ti + 1][tj] = tile:new(self.tileSelected, ti + 1, tj)
--- 		elseif button == 3 then -- Botó roda (apretar)
--- 			self.tileSelected = tileId
--- 		end
--- 	end
--- end
-
--- function TilemapEditor:mousePressedMode2(x, y, button)
--- 	if button == 1 then
--- 		table.insert(self.points, {x, y})
--- 	elseif button == 2 then
--- 		table.remove(self.points)
--- 	end
--- end
-
-
--- function TilemapEditor:drawTileImg(i, x, y, scale)
--- 	local s = scale or self.tileScale
--- 	love.graphics.draw(tileImages[i], x, y, 0, s, s)
--- end
-
--- function TilemapEditor:undo()
--- 	map[self.pastI][self.pastJ] = tile:new(self.pastTile, self.pastI, self.pastJ)
--- end
-
--- function TilemapEditor:clean()
--- 	local g = collectgarbage("count")
--- 	collectgarbage()
--- 	print(tostring(g - collectgarbage("count")) .. "Kb de basura limpiados")
--- end
-
-
--- function TilemapEditor:changeTo(mode)
-	
--- 	if mode == 1 then
--- 		camera:setScale(2, 2)
--- 		camera:move(-camera.x, -camera.y)
--- 		self.tileScale = 0.5
--- 	elseif mode == 2 then
--- 		camera:setScale(1, 1)
--- 		camera:move(0, -camera.y)
--- 		self.tileScale = 1
--- 	end
-	
--- 	self.mode = mode
--- end
-
--- function TilemapEditor:zip() -- Canvia tile per tile.id per a que siga mes facil savear i llegir la info
--- 	local mapZip, mapBackZip = {}, {}
--- 	for i = 1, #map do
--- 		table.insert(mapZip, {})
--- 		table.insert(mapBackZip, {})
--- 		for j = 1, #map[1] do
--- 			table.insert(mapZip[i], map[i][j].id)
--- 			table.insert(mapBackZip[i], mapBack[i][j].id)
--- 		end
--- 	end
--- 	return {mapZip, mapBackZip}
--- end
+return TilemapEditor

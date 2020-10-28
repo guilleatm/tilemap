@@ -1,7 +1,7 @@
 -- require('Tile')
 -- require('Tilemap')
-require('TilemapEditor')
-require('../animations/Animation')
+local TilemapEditor = require('TilemapEditor')
+Animation = require('../animations/Animation')
 
 local t = 0
 
@@ -12,11 +12,6 @@ end
 
 
 function love.update(dt)
-	t = t + dt
-
-	if t > 3 then		
-		t = 0
-	end
 end
 
 

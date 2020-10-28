@@ -1,4 +1,4 @@
-Tile = {}
+local Tile = {}
 
 function Tile:new(x, y, id)
 	local t = {}
@@ -54,3 +54,5 @@ end
 -- 		self.animation:start()
 -- 	end
 -- end
+
+return Tile
