@@ -12,7 +12,7 @@ function TilemapEditor:new(tileSize, pathToTiles, relativeWidth, relativeHeight,
 
 	assert(tileSize and pathToTiles, "ERROR: TilemapEditor:new(tileSize, pathToTiles), tileSize and pathToTiles can not be nil, pathToTiles is the path to the directory that contains the tile images")
 
-	te.tilemap = Tilemap:new(tileSize)
+	te.tilemap = tilemap or Tilemap:new(tileSize)
 
 	te.pathToTiles = toPath(pathToTiles)
 	te.tileIDs = love.filesystem.getDirectoryItems(te.pathToTiles)
@@ -51,13 +51,13 @@ function TilemapEditor:new(tileSize, pathToTiles, relativeWidth, relativeHeight,
 
 		te.tileSet = Tilemap:new(side, te.canvasOx, te.canvasOy)
 
-		local xTile, yTile = 1, 1
-		for i, tileName in ipairs(te.tileIDs) do
-			te.tileSet:addTile((xTile - 1) * side + side / 2, (yTile - 1) * side + side / 2, te.pathToTiles .. tileName)
-			xTile = xTile + 1
-			if i % nTilesInRow == 0 then
-				xTile = 1
-				yTile = yTile + 1
+		local j, i = 1, 1
+		for count, tileName in ipairs(te.tileIDs) do
+			te.tileSet:addTile((j - 1) * side, (i - 1) * side, te.pathToTiles .. tileName)
+			j = j + 1
+			if count % nTilesInRow == 0 then
+				j = 1
+				i = i + 1
 			end
 		end
 	end
@@ -116,6 +116,7 @@ function TilemapEditor:leftClick(x, y)
 	if x > self.canvasOx and x < self.canvasOx + self.canvasW and y > self.canvasOy and y < self.canvasOy + self.canvasH then
 		-- Click inside canvas
 		self.selectedTile = self:selectTile(self.tileSet, x, y)
+		--print(self.selectedTile)
 	else
 		-- Click outside canvas
 		if not self.selectedTile then return end

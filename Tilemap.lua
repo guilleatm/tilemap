@@ -35,11 +35,10 @@ end
 
 function Tilemap:selectTile(x, y)
 
-	local j, i = (x - (x % self.tileSize)) / self.tileSize, (y - (y % self.tileSize)) / self.tileSize
-
+	local j, i = ((x - (x % self.tileSize)) / self.tileSize) + 1, ((y - (y % self.tileSize)) / self.tileSize) + 1
+	print(j, i)
 	if not self.tiles[i] or not self.tiles[i][j] then
 		return nil, j, i
-
 	end
 	return self.tiles[i][j], j, i
 end
@@ -47,7 +46,7 @@ end
 function Tilemap:addTile(x, y, id) -- #M
 
 	local tiles, j, i = self:selectTile(x, y)
-	local tile = Tile:new(j * self.tileSize, i * self.tileSize, id)
+	local tile = Tile:new(j, i, id)
 
 	-- if string.find(id, animationKey) then -- #C ANIMATIONS IN TILES!!
 	-- 	tile.animation = Animation:load(id, nil, nil, nil, nil, self.tileSize)
@@ -70,7 +69,11 @@ function Tilemap:removeTile(x, y)
 
 	local tiles, j, i = self:selectTile(x, y)
 
-	tiles[#tiles] = nil -- Arguments passed by reference
+	if tiles then
+		tiles[#tiles] = nil -- Arguments passed by reference
+	end
+
+	
 end
 
 function Tilemap:clear()

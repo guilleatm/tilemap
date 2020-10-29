@@ -43,7 +43,7 @@ function Tile:draw(tileSize, dt)
 		self.animation:update(dt)
 		self.animation:draw(self.x, self.y)
 	else
-		love.graphics.draw(self.img, self.j * tileSize, self.i * tileSize, 0, tileSize / self.imgSize)
+		love.graphics.draw(self.img, (self.j - 1) * tileSize, (self.i - 1) * tileSize, 0, tileSize / self.imgSize)
 	end
 end
 
