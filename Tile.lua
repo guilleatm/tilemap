@@ -41,7 +41,7 @@ function Tile:draw(tileSize, dt)
 	if self.animation then
 		dt = dt or love.timer.getDelta()
 		self.animation:update(dt)
-		self.animation:draw(self.x, self.y)
+		self.animation:draw((self.j - 1) * tileSize, (self.i - 1) * tileSize)
 	else
 		love.graphics.draw(self.img, (self.j - 1) * tileSize, (self.i - 1) * tileSize, 0, tileSize / self.imgSize)
 	end

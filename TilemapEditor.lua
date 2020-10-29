@@ -115,8 +115,8 @@ end
 function TilemapEditor:leftClick(x, y)
 	if x > self.canvasOx and x < self.canvasOx + self.canvasW and y > self.canvasOy and y < self.canvasOy + self.canvasH then
 		-- Click inside canvas
-		self.selectedTile = self:selectTile(self.tileSet, x, y)
-		--print(self.selectedTile)
+		local tiles = self:selectTile(self.tileSet, x - self.canvasOx, y - self.canvasOy)
+		self.selectedTile = tiles[#tiles]
 	else
 		-- Click outside canvas
 		if not self.selectedTile then return end
